@@ -1,5 +1,8 @@
 package com.bookshop.bookstore.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +24,7 @@ public class Order {
     private double total;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OrderItem> items;
 
     // ✅ Constructors

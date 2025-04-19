@@ -82,4 +82,25 @@ public class OrderController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    
+ // ✅ View all orders for a user
+    @GetMapping("/user")
+    public ResponseEntity<List<Order>> getOrdersByUser(@RequestParam String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().build(); // or return 404
+        }
+
+        List<Order> orders = orderRepository.findByUser(user);
+        return ResponseEntity.ok(orders);
+    }
+    
+    @GetMapping("/user")
+    public ResponseEntity<?> getOrdersByUserEmail(@RequestParam String email) {
+        return userRepository.findByEmail(email)
+                .<ResponseEntity<?>>map(user -> ResponseEntity.ok(orderRepository.findByUser(user)))
+                .orElseGet(() -> ResponseEntity.badRequest().body("User not found"));
+    }
+
+
 }
