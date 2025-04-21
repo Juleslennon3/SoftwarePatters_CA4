@@ -39,10 +39,11 @@ public class UserController {
     }
 
     // ✅ Get all users (Admin functionality)
-    @GetMapping
+    @GetMapping("/all")
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
 
     // ✅ Delete user by ID (Admin functionality)
     @DeleteMapping("/{id}")
@@ -54,4 +55,18 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    @PutMapping("/promote")
+    public ResponseEntity<String> promoteToAdmin(@RequestParam String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("User not found");
+        }
+
+        User user = userOpt.get();
+        user.setRole("ADMIN");
+        userRepository.save(user);
+        return ResponseEntity.ok("User promoted to admin");
+    }
+
 }
