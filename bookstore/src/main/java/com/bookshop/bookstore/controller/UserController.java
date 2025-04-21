@@ -38,16 +38,28 @@ public class UserController {
         return ResponseEntity.status(401).body("Invalid credentials");
     }
 
-    // ✅ Get all users (Admin functionality)
+    private boolean isAdmin(String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        return userOpt.isPresent() && "ADMIN".equalsIgnoreCase(userOpt.get().getRole());
+    }
+
     @GetMapping("/all")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<?> getAllUsers(@RequestParam String email) {
+        if (!isAdmin(email)) {
+            return ResponseEntity.status(403).body("Access denied: Admins only");
+        }
+        return ResponseEntity.ok(userRepository.findAll());
     }
 
 
-    // ✅ Delete user by ID (Admin functionality)
+
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable Long id, @RequestParam String email) {
+        if (!isAdmin(email)) {
+            return ResponseEntity.status(403).body("Access denied: Admins only");
+        }
+
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
             return ResponseEntity.ok("User deleted successfully");
@@ -55,9 +67,15 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
     
     @PutMapping("/promote")
-    public ResponseEntity<String> promoteToAdmin(@RequestParam String email) {
+    public ResponseEntity<String> promoteToAdmin(@RequestParam String email, @RequestParam String requesterEmail) {
+        if (!isAdmin(requesterEmail)) {
+            return ResponseEntity.status(403).body("Access denied: Admins only");
+        }
+
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("User not found");

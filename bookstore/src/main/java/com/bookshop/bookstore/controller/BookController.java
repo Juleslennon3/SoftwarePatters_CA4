@@ -26,7 +26,7 @@ public class BookController {
     @Autowired
     private BookRepository bookRepository;
 
-    // ✅ FIRST: sorted books
+    //  FIRST: sorted books
     @GetMapping("/sort")
     public List<Book> getSortedBooks(@RequestParam String sortBy,
                                      @RequestParam(defaultValue = "asc") String order) {
@@ -50,25 +50,25 @@ public class BookController {
 
     
 
-    // ✅ All books
+    //  All books
     @GetMapping
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
-    // ✅ Book by ID
+    //  Book by ID
     @GetMapping("/{id}")
     public Optional<Book> getBookById(@PathVariable Long id) {
         return bookRepository.findById(id);
     }
 
-    // ✅ Create book
+    //  Create book
     @PostMapping
     public Book createBook(@RequestBody Book book) {
         return bookRepository.save(book);
     }
 
-    // ✅ Update book
+    //  Update book
     @PutMapping("/{id}")
     public Book updateBook(@PathVariable Long id, @RequestBody Book updatedBook) {
         return bookRepository.findById(id).map(book -> {
@@ -86,13 +86,13 @@ public class BookController {
         });
     }
 
-    // ✅ Delete book
+    //  Delete book
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable Long id) {
         bookRepository.deleteById(id);
     }
 
-    // ✅ Search books
+    //  Search books
     @GetMapping("/search")
     public List<Book> searchBooks(@RequestParam String query, @RequestParam String type) {
         return switch (type.toLowerCase()) {
